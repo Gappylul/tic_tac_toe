@@ -14,10 +14,10 @@ defmodule TicTacToeWeb.HomeLive do
   end
 
   @impl true
-  def handle_event("create_game", _params, socket) do
+  def handle_event("create_game", %{"game_mode" => game_mode}, socket) do
     user_id = socket.assigns.current_scope.user.id
 
-    case Games.create_new_game(user_id) do
+    case Games.create_new_game(user_id, game_mode) do
       {:ok, game} ->
         {:noreply, push_navigate(socket, to: ~p"/game/#{game.game_id}")}
 

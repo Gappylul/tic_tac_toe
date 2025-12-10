@@ -15,14 +15,33 @@
         <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 shadow-2xl space-y-4">
           <%!-- Create New Game --%>
           <div>
-            <button
-              phx-click="create_game"
-              class="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
-            >
-              <span class="text-lg">🎮 Create New Game</span>
-            </button>
+            <div class="space-y-2">
+              <button
+                phx-click="create_game"
+                phx-value-game_mode="normal"
+                class="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
+              >
+                <span class="text-lg">🎮 Normal Game</span>
+              </button>
+
+              <button
+                phx-click="create_game"
+                phx-value-game_mode="timed"
+                class="w-full bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
+              >
+                <span class="text-lg">⏱️ Timed (30s/move)</span>
+              </button>
+
+              <button
+                phx-click="create_game"
+                phx-value-game_mode="blitz"
+                class="w-full bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
+              >
+                <span class="text-lg">⚡ Blitz (10s/move)</span>
+              </button>
+            </div>
             <p class="text-blue-200 text-xs mt-2 text-center opacity-80">
-              Start a new game and share the link
+              Choose a game mode and share the link
             </p>
           </div>
 

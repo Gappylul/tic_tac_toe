@@ -298,6 +298,8 @@ defmodule TicTacToe.Accounts do
     |> Repo.all()
   end
 
+  def get_user(id), do: Repo.get(User, id)
+
   ## Token helper
 
   defp update_user_and_delete_all_tokens(changeset) do
