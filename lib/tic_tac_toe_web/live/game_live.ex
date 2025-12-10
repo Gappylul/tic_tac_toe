@@ -396,11 +396,11 @@ defmodule TicTacToeWeb.GameLive do
     end
   end
 
-  defp get_message_style(message_type) do
-    case message_type do
-      "quick" -> "bg-purple-500/20 border-purple-500/50 text-purple-200"
-      "emoji" -> "text-2xl"
-      _ -> "bg-white/10"
-    end
-  end
+  # defp get_message_style(message_type) do
+  #   case message_type do
+  #     "quick" -> "bg-purple-500/20 border-purple-500/50 text-purple-200"
+  #     "emoji" -> "text-2xl"
+  #     _ -> "bg-white/10"
+  #   end
+  # end
 end
