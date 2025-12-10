@@ -1,0 +1,157 @@
+<Layouts.app flash={@flash} current_scope={@current_scope}>
+  <div class="h-screen flex items-center justify-center p-4">
+    <div class="max-w-md w-full">
+      <%!-- Header --%>
+      <div class="text-center mb-4">
+
+        <h1 class="text-3xl font-bold text-white mb-2 tracking-tight">
+          Tic Tac Toe
+        </h1>
+        <%= if @game.rematch_count > 0 do %>
+          <p class="text-purple-300 text-xs mb-2">
+            🔄 Rematch #{@game.rematch_count}
+          </p>
+        <% end %>
+
+        <%!-- Game Status --%>
+        <%= cond do %>
+          <% @game.status == "waiting" -> %>
+            <div class="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-2.5 backdrop-blur-sm">
+              <p class="text-yellow-200 text-sm font-semibold">Waiting for opponent...</p>
+              <p class="text-yellow-100 text-xs mt-1">Share this link:</p>
+              <div class="flex gap-2 mt-1.5">
+                <input
+                  type="text"
+                  value={@game_url}
+                  readonly
+                  class="bg-white/10 text-white px-2 py-1 rounded text-xs flex-1"
+                  id="game-url-input"
+                />
+                <button
+                  phx-click="copy_link"
+                  onclick={"navigator.clipboard.writeText('#{@game_url}')"}
+                  class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs font-semibold transition-all"
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+          <% @game.status == "finished" -> %>
+            <div class="bg-green-500/20 border border-green-500/50 rounded-lg p-2.5 backdrop-blur-sm">
+              <%= cond do %>
+                <% @game.winner == "draw" -> %>
+                  <p class="text-green-200 text-lg font-bold">It's a Draw!</p>
+                <% @game.winner == @player_symbol -> %>
+                  <p class="text-green-200 text-lg font-bold">🎉 You Won! 🎉</p>
+                <% true -> %>
+                  <p class="text-red-200 text-lg font-bold">You Lost!</p>
+              <% end %>
+              <button
+                phx-click="reset_game"
+                class="mt-2 bg-green-500 hover:bg-green-600 text-white px-4 py-1.5 rounded-lg text-sm font-semibold transition-all"
+              >
+                Play Again
+              </button>
+            </div>
+          <% true -> %>
+            <%= if @game.current_player == @player_symbol do %>
+              <div class="bg-blue-500/20 border border-blue-500/50 rounded-lg p-2.5 backdrop-blur-sm">
+                <p class="text-blue-200 text-sm font-semibold">
+                  Your Turn! ({String.upcase(@player_symbol)})
+                </p>
+              </div>
+            <% else %>
+              <div class="bg-purple-500/20 border border-purple-500/50 rounded-lg p-2.5 backdrop-blur-sm">
+                <p class="text-purple-200 text-sm font-semibold">Opponent's Turn...</p>
+              </div>
+            <% end %>
+        <% end %>
+      </div>
+
+      <%!-- Players Info --%>
+      <div class="flex justify-between mb-3 text-white text-sm">
+        <div class={[
+          "px-3 py-1.5 rounded-lg backdrop-blur-sm font-semibold text-xs",
+          @game.current_player == "x" && "bg-blue-500/30 border-2 border-blue-400",
+          @game.current_player != "x" && "bg-white/10"
+        ]}>
+          <span class="opacity-75">Player X</span>
+          <br />
+          <span class={[@player_symbol == "x" && "text-blue-300"]}>
+            <%= if @player_symbol == "x" do %>
+              You
+            <% else %>
+              {player_name(@game, "x")}
+            <% end %>
+          </span>
+        </div>
+
+        <div class={[
+          "px-3 py-1.5 rounded-lg backdrop-blur-sm font-semibold text-xs",
+          @game.current_player == "o" && "bg-pink-500/30 border-2 border-pink-400",
+          @game.current_player != "o" && "bg-white/10"
+        ]}>
+          <span class="opacity-75">Player O</span>
+          <br />
+          <span class={[@player_symbol == "o" && "text-pink-300"]}>
+            <%= if @player_symbol == "o" do %>
+              You
+            <% else %>
+              {player_name(@game, "o")}
+            <% end %>
+          </span>
+        </div>
+      </div>
+      <%!-- Game Board --%>
+      <div class="bg-white/10 backdrop-blur-md rounded-2xl p-3 shadow-2xl">
+        <div class="grid grid-cols-3 gap-2 max-w-xs mx-auto" id="game-board">
+          <%= for position <- 0..8 do %>
+            <% cell_value = get_cell_value(@game.board, position) %>
+            <button
+              phx-click="make_move"
+              phx-value-position={position}
+              disabled={
+                cell_value != nil || @game.status != "playing" ||
+                  @game.current_player != @player_symbol
+              }
+              class={[
+                "aspect-square rounded-xl font-bold text-3xl transition-all duration-200",
+                "flex items-center justify-center",
+                cell_value == nil && @game.status == "playing" &&
+                  @game.current_player == @player_symbol &&
+                  "bg-white/20 hover:bg-white/30 cursor-pointer hover:scale-105",
+                cell_value == nil &&
+                  (@game.status != "playing" || @game.current_player != @player_symbol) &&
+                  "bg-white/10 cursor-not-allowed",
+                cell_value != nil && "bg-white/20 cursor-not-allowed",
+                cell_value == "x" && "text-blue-400",
+                cell_value == "o" && "text-pink-400"
+              ]}
+            >
+              {cell_value && String.upcase(cell_value)}
+            </button>
+          <% end %>
+        </div>
+      </div>
+
+      <%!-- Actions --%>
+      <div class="mt-3 flex gap-2 justify-center">
+        <.link
+          navigate={~p"/"}
+          class="bg-white/10 hover:bg-white/20 text-white px-4 py-1.5 rounded-lg text-sm font-semibold transition-all border border-white/30"
+        >
+          ← Home
+        </.link>
+
+        <%= if @game.status == "playing" do %>
+          <button
+            phx-click="reset_game"
+            class="bg-red-500/20 hover:bg-red-500/30 text-red-200 px-4 py-1.5 rounded-lg text-sm font-semibold transition-all border border-red-500/50"
+          >
+            Reset
+          </button>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</Layouts.app>

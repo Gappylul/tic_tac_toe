@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="csrf-token" content={get_csrf_token()} />
+<.live_title default="TicTacToe" suffix=" · Phoenix Framework">
+{assigns[:page_title]}
+</.live_title>
+<link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
+<script defer phx-track-static type="text/javascript" src={~p"/assets/js/app.js"}>
+</script>
+<script>
+      (() => {
+const setTheme = (theme) => {
+if (theme === "system") {
+            localStorage.removeItem("phx:theme");
+            document.documentElement.removeAttribute("data-theme");
+} else {
+            localStorage.setItem("phx:theme", theme);
+            document.documentElement.setAttribute("data-theme", theme);
+}
+};
+if (!document.documentElement.hasAttribute("data-theme")) {
+setTheme(localStorage.getItem("phx:theme") || "dark");
+}
+        window.addEventListener("storage", (e) => e.key === "phx:theme" && setTheme(e.newValue || "system"));
+        window.addEventListener("phx:set-theme", (e) => setTheme(e.target.dataset.phxTheme));
+})();
+</script>
+</head>
+<body class="h-full overflow-hidden bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+<%= if @current_scope do %>
+  <nav class="absolute top-0 right-0 z-10 p-3">
+    <div class="flex items-center gap-2 bg-white/10 backdrop-blur-lg rounded-full px-5 py-2 border border-white/20 shadow-lg">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
+          <span class="text-white text-xs font-bold">
+            {String.first(@current_scope.user.email) |> String.upcase()}
+          </span>
+        </div>
+        <span class="text-white text-sm font-medium hidden sm:inline">{@current_scope.user.email}</span>
+      </div>
+      <div class="w-px h-5 bg-white/20"></div>
+      <.link 
+        href={~p"/users/settings"} 
+        class="text-white/90 hover:text-white text-sm font-medium transition-colors px-2 py-1 rounded-lg hover:bg-white/10"
+      >
+        Settings
+      </.link>
+      <.link 
+        href={~p"/users/log-out"} 
+        method="delete"
+        class="text-white/90 hover:text-red-300 text-sm font-medium transition-colors px-2 py-1 rounded-lg hover:bg-red-500/20"
+      >
+        Log out
+      </.link>
+    </div>
+  </nav>
+<% end %>
+{@inner_content}
+</body>
+</html>

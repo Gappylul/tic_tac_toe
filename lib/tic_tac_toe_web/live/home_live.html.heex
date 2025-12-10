@@ -1,0 +1,132 @@
+<Layouts.app flash={@flash} current_scope={@current_scope}>
+  <div class="h-screen flex items-center justify-center p-4 overflow-y-auto">
+    <div class="max-w-4xl w-full grid md:grid-cols-2 gap-6">
+      <%!-- Main Game Section --%>
+      <div>
+        <div class="text-center mb-6">
+          <h1 class="text-4xl font-bold text-white mb-2 tracking-tight">
+            Tic Tac Toe
+          </h1>
+          <p class="text-blue-200 text-sm">
+            Play multiplayer with your friends!
+          </p>
+        </div>
+
+        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 shadow-2xl space-y-4">
+          <%!-- Create New Game --%>
+          <div>
+            <button
+              phx-click="create_game"
+              class="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
+            >
+              <span class="text-lg">🎮 Create New Game</span>
+            </button>
+            <p class="text-blue-200 text-xs mt-2 text-center opacity-80">
+              Start a new game and share the link
+            </p>
+          </div>
+
+          <%!-- Divider --%>
+          <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-white/20"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+              <span class="px-4 bg-transparent text-white/60">OR</span>
+            </div>
+          </div>
+
+          <%!-- Join Existing Game --%>
+          <div>
+            <form phx-submit="join_game" id="join-game-form">
+              <div class="space-y-2">
+                <label class="block text-white font-semibold text-sm mb-1">
+                  Join Game
+                </label>
+                <input
+                  type="text"
+                  name="game_id"
+                  placeholder="Enter game ID"
+                  class="w-full bg-white/10 text-white placeholder-white/40 px-4 py-2.5 rounded-lg border border-white/20 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/50 focus:outline-none transition-all text-sm"
+                  required
+                />
+                <button
+                  type="submit"
+                  class="w-full bg-white/20 hover:bg-white/30 text-white font-bold py-2.5 px-6 rounded-xl transition-all duration-200 border border-white/30"
+                >
+                  Join Game
+                </button>
+              </div>
+            </form>
+            <p class="text-blue-200 text-xs mt-2 text-center opacity-80">
+              Enter the game ID from your friend
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <%!-- Leaderboard Section --%>
+      <div>
+        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 shadow-2xl">
+          <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+            <span>🏆</span>
+            <span>Leaderboard</span>
+          </h2>
+
+          <%= if @leaderboard == [] do %>
+            <p class="text-white/60 text-center py-8">No games played yet!</p>
+          <% else %>
+            <div class="space-y-2">
+              <%= for {player, index} <- Enum.with_index(@leaderboard, 1) do %>
+                <div class={[
+                  "flex items-center justify-between p-3 rounded-lg transition-all",
+                  index == 1 && "bg-yellow-500/20 border border-yellow-500/50",
+                  index == 2 && "bg-gray-400/20 border border-gray-400/50",
+                  index == 3 && "bg-orange-600/20 border border-orange-600/50",
+                  index > 3 && "bg-white/5"
+                ]}>
+                  <div class="flex items-center gap-3">
+                    <span class={[
+                      "font-bold text-lg w-8 text-center",
+                      index == 1 && "text-yellow-400",
+                      index == 2 && "text-gray-300",
+                      index == 3 && "text-orange-400",
+                      index > 3 && "text-white/60"
+                    ]}>
+                      <%= cond do %>
+                        <% index == 1 -> %>
+                          🥇
+                        <% index == 2 -> %>
+                          🥈
+                        <% index == 3 -> %>
+                          🥉
+                        <% true -> %>
+                          #{index}
+                      <% end %>
+                    </span>
+                    <div>
+                      <p class={[
+                        "font-semibold text-sm",
+                        player.email == @current_scope.user.email && "text-blue-300",
+                        player.email != @current_scope.user.email && "text-white"
+                      ]}>
+                        {player.email}
+                        <%= if player.email == @current_scope.user.email do %>
+                          <span class="text-xs opacity-75">(You)</span>
+                        <% end %>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-white font-bold text-lg">{player.wins}</p>
+                    <p class="text-white/60 text-xs">wins</p>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layouts.app>
