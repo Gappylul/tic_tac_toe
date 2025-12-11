@@ -28,6 +28,7 @@ import topbar from "../vendor/topbar"
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
+  reconnectAfterMs: () => 1000,
   params: {_csrf_token: csrfToken},
   hooks: {...colocatedHooks},
 })
@@ -80,4 +81,3 @@ if (process.env.NODE_ENV === "development") {
     window.liveReloader = reloader
   })
 }
-
