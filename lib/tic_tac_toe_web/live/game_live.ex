@@ -36,10 +36,14 @@ defmodule TicTacToeWeb.GameLive do
         chat_messages = Games.list_chat_messages(socket.assigns.game.id)
         spectator_count = get_spectator_count(game_id, socket.assigns.game)
 
+        base_url = Application.get_env(:tic_tac_toe, :base_url)
+
+        game_url = "#{base_url}/game/#{game_id}"
+
         socket =
           socket
           |> assign(:player_symbol, player_symbol)
-          |> assign(:game_url, url(~p"/game/#{game_id}"))
+          |> assign(:game_url, game_url)
           |> assign(:game_id, game_id)
           |> assign(:chat_messages, chat_messages)
           |> assign(:chat_input, "")
