@@ -76,7 +76,8 @@ defmodule TicTacToe.Accounts do
   """
   def register_user(attrs) do
     %User{}
-    |> User.email_changeset(attrs)
+    |> User.registration_changeset(attrs)
+    |> Ecto.Changeset.put_change(:confirmed_at, DateTime.utc_now() |> DateTime.truncate(:second))
     |> Repo.insert()
   end
 
@@ -116,20 +117,10 @@ defmodule TicTacToe.Accounts do
 
   If the token matches, the user email is updated and the token is deleted.
   """
-  def update_user_email(user, token) do
-    context = "change:#{user.email}"
-
-    Repo.transact(fn ->
-      with {:ok, query} <- UserToken.verify_change_email_token_query(token, context),
-           %UserToken{sent_to: email} <- Repo.one(query),
-           {:ok, user} <- Repo.update(User.email_changeset(user, %{email: email})),
-           {_count, _result} <-
-             Repo.delete_all(from(UserToken, where: [user_id: ^user.id, context: ^context])) do
-        {:ok, user}
-      else
-        _ -> {:error, :transaction_aborted}
-      end
-    end)
+  def update_user_email(user, attrs) do
+    user
+    |> User.email_changeset(attrs)
+    |> Repo.update()
   end
 
   @doc """

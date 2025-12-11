@@ -30,6 +30,16 @@ defmodule TicTacToe.Accounts.User do
     |> validate_email(opts)
   end
 
+  @doc """
+  A user changeset for registration with email and password.
+  """
+  def registration_changeset(user, attrs, opts \\ []) do
+    user
+    |> cast(attrs, [:email, :password])
+    |> validate_email(opts)
+    |> validate_password(opts)
+  end
+
   defp validate_email(changeset, opts) do
     changeset =
       changeset
@@ -111,7 +121,7 @@ defmodule TicTacToe.Accounts.User do
   Confirms the account by setting `confirmed_at`.
   """
   def confirm_changeset(user) do
-    now = DateTime.utc_now(:second)
+    now = DateTime.utc_now() |> DateTime.truncate(:second)
     change(user, confirmed_at: now)
   end
 
